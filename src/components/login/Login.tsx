@@ -1,12 +1,18 @@
-"use client"
+"use client";
+
 import React, { useState } from "react";
 import { TextField, Button, Card, Typography, Grid } from "@mui/material";
+import { useRouter } from "next/navigation";
 import API_BASE_URL from "@/config/api";
+import { useToken } from "@/context/TokenProvider"; // ✅ Use context
+import Cookies from "js-cookie";
 
 const Login = () => {
+  const { setToken } = useToken(); // ✅ Get setToken from context
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,9 +26,7 @@ const Login = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
@@ -32,8 +36,9 @@ const Login = () => {
         throw new Error(data.message || "Login failed");
       }
 
-      console.log("Login successful:", data);
-      alert("Login successful!");
+      setToken(data.token); // ✅ Update token in context
+      Cookies.set("token", data.token, { expires: 7 }); 
+      router.push("/");
     } catch (err: any) {
       setError(err.message);
       console.error("Error logging in:", err);
@@ -43,13 +48,8 @@ const Login = () => {
   };
 
   return (
-    <Grid 
-      container 
-      justifyContent="center" 
-      alignItems="center" 
-      sx={{ minHeight: "100vh", backgroundColor: "#f3f4f6", padding: 2 }}
-    >
-      <Grid >
+    <Grid container justifyContent="center" alignItems="center" sx={{ minHeight: "100vh", backgroundColor: "#f3f4f6", padding: 2 }}>
+      <Grid>
         <Card sx={{ padding: 4, boxShadow: 3, borderRadius: 2 }}>
           <Typography variant="h5" align="center" fontWeight="bold" gutterBottom>
             Login
@@ -59,6 +59,7 @@ const Login = () => {
 
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <TextField
+              type="email"
               fullWidth
               label="Email"
               name="email"
