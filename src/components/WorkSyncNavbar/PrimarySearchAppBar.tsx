@@ -15,7 +15,7 @@ import MoreIcon from '@mui/icons-material/MoreVert';
 import { useAuth } from '@/context/TokenProvider';
 import { destroyCookie } from 'nookies';
 import { useRouter } from "next/navigation";
-
+import LogoutIcon from '@mui/icons-material/Logout';
 export default function PrimarySearchAppBar() {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -23,7 +23,7 @@ export default function PrimarySearchAppBar() {
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-    const { setToken, isAuthenticated, setIsAuthenticated, user,setUser } = useAuth();
+    const { setToken, isAuthenticated, setIsAuthenticated, user, setUser } = useAuth();
     const router = useRouter();
     console.log("isAuthenticatedisAuthenticatedisAuthenticated", user)
     const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -56,36 +56,31 @@ export default function PrimarySearchAppBar() {
     const renderMenu = (
         <Menu
             anchorEl={anchorEl}
-            anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             id={menuId}
             keepMounted
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             open={isMenuOpen}
             onClose={handleMenuClose}
+            className='mt-12'
         >
             {isAuthenticated && (
-                <>
-                    <MenuItem onClick={handleMenuClose}>Hello,{user?.name}</MenuItem>
+                <Box>
+                    <MenuItem onClick={handleMenuClose}>Hello, {user?.name}</MenuItem>
                     <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
                     <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-                </>
+                </Box>
             )}
             <MenuItem onClick={handleMenuClose}>
                 {isAuthenticated ? (
                     <div onClick={handleLogout}>Logout</div>
                 ) : (
-                    <div onClick={() => router.push("/login")}>Login</div>
+                    <div onClick={() => router.push("/login")}>Signin</div>
                 )}
             </MenuItem>
         </Menu>
-
     );
+    
 
     const mobileMenuId = 'primary-search-account-menu-mobile';
     const renderMobileMenu = (
@@ -97,34 +92,52 @@ export default function PrimarySearchAppBar() {
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
+            className='mt-12'
         >
-            <MenuItem onClick={() => router.push("/about")}>
-                <Typography>About</Typography>
-            </MenuItem>
-            <MenuItem>
-                <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                    <Badge badgeContent={4} color="error">
-                        <MailIcon />
-                    </Badge>
-                </IconButton>
-                <p>Messages</p>
-            </MenuItem>
-            <MenuItem>
-                <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
-                    <Badge badgeContent={17} color="error">
-                        <NotificationsIcon />
-                    </Badge>
-                </IconButton>
-                <p>Notifications</p>
-            </MenuItem>
-            <MenuItem onClick={handleProfileMenuOpen}>
-                <IconButton size="large" aria-label="account of current user" aria-haspopup="true" color="inherit">
-                    <AccountCircle />
-                </IconButton>
-                <p>Profile</p>
+            {isAuthenticated && (
+                <Box>
+                    <MenuItem>
+                        <Typography>Hello, {user?.name}</Typography>
+                    </MenuItem>
+                    <MenuItem>
+                        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+                            <Badge badgeContent={4} color="error">
+                                <MailIcon />
+                            </Badge>
+                        </IconButton>
+                        <p>Messages</p>
+                    </MenuItem>
+                    <MenuItem>
+                        <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
+                            <Badge badgeContent={17} color="error">
+                                <NotificationsIcon />
+                            </Badge>
+                        </IconButton>
+                        <p>Notifications</p>
+                    </MenuItem>
+                    <MenuItem>
+                        <IconButton size="large" aria-label="account of current user" color="inherit">
+                            <AccountCircle />
+                        </IconButton>
+                        <p>Profile</p>
+                    </MenuItem>
+                </Box>
+            )}
+            <MenuItem onClick={handleMenuClose}>
+                {isAuthenticated ? (
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }} onClick={handleLogout}>
+                        <LogoutIcon />
+                        <Typography>Logout</Typography>
+                    </Box>
+                ) : (
+                    <Box onClick={() => router.push("/login")}>
+                        <Typography>Signin</Typography>
+                    </Box>
+                )}
             </MenuItem>
         </Menu>
     );
+    
 
 
     return (
