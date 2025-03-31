@@ -8,7 +8,7 @@ import { useAuth } from "@/context/TokenProvider";
 import Cookies from "js-cookie";
 
 const Login = () => {
-  const { setToken, setIsAuthenticated } = useAuth();
+  const { setToken, setIsAuthenticated, setUser } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,9 +36,14 @@ const Login = () => {
         throw new Error(data.message || "Login failed");
       }
 
+      // ✅ Set token and authentication status
       setToken(data.token);
-      setIsAuthenticated(true); // ✅ Set authentication status
+      setIsAuthenticated(true);
+      setUser(data.user); // ✅ Store user data
+
+      // Store token and user in cookies for persistence
       Cookies.set("token", data.token, { expires: 7 });
+      Cookies.set("user", JSON.stringify(data.user), { expires: 7 });
 
       router.push("/");
     } catch (err: any) {

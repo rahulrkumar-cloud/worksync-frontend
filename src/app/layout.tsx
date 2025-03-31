@@ -39,6 +39,7 @@ import "./globals.css";
 import { cookies } from "next/headers";
 import { AuthProvider } from "@/context/TokenProvider"; // ✅ Import updated TokenProvider
 import Wrapper from "@/components/Wrapper/Wrapper";
+import PrimarySearchAppBar from "@/components/WorkSyncNavbar/PrimarySearchAppBar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -64,6 +65,7 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <AuthProvider>
+          <PrimarySearchAppBar />
           <Wrapper>
           {children}
           </Wrapper>

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/TokenProvider";
 import { CircularProgress, Box } from "@mui/material"; // ✅ Import MUI loader
-
+import PrimarySearchAppBar from "@/components/WorkSyncNavbar/PrimarySearchAppBar"
 interface WrapperProps {
   children: React.ReactNode;
 }
@@ -48,7 +48,8 @@ const Wrapper: React.FC<WrapperProps> = ({ children }) => {
     );
   }
 
-  return <div className="wrapper">{children}</div>;
+  return <div className="wrapper">
+    {children}</div>;
 };
 
 export default Wrapper;

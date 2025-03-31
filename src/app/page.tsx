@@ -80,14 +80,14 @@ export default function Home() {
 
   return (
     <Box sx={{ padding: 2 }}>
-      <Button 
+      {/* <Button 
         variant="contained" 
         color="error" 
         sx={{ position: "absolute", top: 20, right: 20 }}
         onClick={handleLogout}
       >
         Logout
-      </Button>
+      </Button> */}
 
       <Typography variant="h6">User List</Typography>
       <List>
