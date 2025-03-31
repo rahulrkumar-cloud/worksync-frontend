@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { useToken } from "@/context/TokenProvider";
+import { useAuth } from "@/context/TokenProvider";
 import { CircularProgress, Box } from "@mui/material"; // ✅ Import MUI loader
 
 interface WrapperProps {
@@ -12,7 +12,7 @@ interface WrapperProps {
 const Wrapper: React.FC<WrapperProps> = ({ children }) => {
   const router = useRouter();
   const pathname = usePathname(); // Get current route
-  const { token } = useToken();
+  const { token } = useAuth();
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {

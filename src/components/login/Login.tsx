@@ -4,11 +4,11 @@ import React, { useState } from "react";
 import { TextField, Button, Card, Typography, Grid } from "@mui/material";
 import { useRouter } from "next/navigation";
 import API_BASE_URL from "@/config/api";
-import { useToken } from "@/context/TokenProvider"; // ✅ Use context
+import { useAuth } from "@/context/TokenProvider";
 import Cookies from "js-cookie";
 
 const Login = () => {
-  const { setToken } = useToken(); // ✅ Get setToken from context
+  const { setToken, setIsAuthenticated } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,12 +36,13 @@ const Login = () => {
         throw new Error(data.message || "Login failed");
       }
 
-      setToken(data.token); // ✅ Update token in context
-      Cookies.set("token", data.token, { expires: 7 }); 
+      setToken(data.token);
+      setIsAuthenticated(true); // ✅ Set authentication status
+      Cookies.set("token", data.token, { expires: 7 });
+
       router.push("/");
     } catch (err: any) {
       setError(err.message);
-      console.error("Error logging in:", err);
     } finally {
       setLoading(false);
     }
@@ -91,10 +92,6 @@ const Login = () => {
               {loading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
-
-          <Typography align="center" color="textSecondary" mt={2}>
-            Don't have an account? <a href="/signup" style={{ color: "#1976d2" }}>Sign up</a>
-          </Typography>
         </Card>
       </Grid>
     </Grid>

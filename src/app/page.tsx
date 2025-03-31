@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import API_BASE_URL from "@/config/api";
-import { useToken } from "@/context/TokenProvider"; // ✅ Token context
+import { useAuth } from "@/context/TokenProvider"; // ✅ Token context
 import { destroyCookie } from "nookies";
 
 interface User {
@@ -17,11 +17,12 @@ interface User {
 }
 
 export default function Home() {
-  const { token, setToken } = useToken(); // ✅ Get token and setToken
+  const { token, setToken,isAuthenticated } = useAuth(); // ✅ Get token and setToken
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  console.log("isAuthenticated",isAuthenticated)
 
   useEffect(() => {
     if (!token) return; // ✅ Wait until token is available
@@ -60,7 +61,7 @@ export default function Home() {
     setToken(null); // ✅ Remove token from context
   };
 
-  if (!token) return <Typography>Loading authentication...</Typography>;
+  if (!isAuthenticated) return <Typography>Loading authentication...</Typography>;
   if (loading) 
     return (
       <Box 
