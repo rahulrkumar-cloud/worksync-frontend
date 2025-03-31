@@ -61,7 +61,20 @@ export default function Home() {
   };
 
   if (!token) return <Typography>Loading authentication...</Typography>;
-  if (loading) return <CircularProgress />;
+  if (loading) 
+    return (
+      <Box 
+        sx={{ 
+          display: "flex", 
+          justifyContent: "center", 
+          alignItems: "center", 
+          height: "100vh" 
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  
   if (error) return <Typography color="error">{error}</Typography>;
 
   return (
