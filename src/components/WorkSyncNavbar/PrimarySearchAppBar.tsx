@@ -23,7 +23,7 @@ export default function PrimarySearchAppBar() {
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-    const { setToken, isAuthenticated, setIsAuthenticated, user, setUser } = useAuth();
+    const { setToken, isAuthenticated, setIsAuthenticated, user, setUser,logout } = useAuth();
     const router = useRouter();
     console.log("isAuthenticatedisAuthenticatedisAuthenticated", user)
     const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -44,11 +44,12 @@ export default function PrimarySearchAppBar() {
     };
 
     const handleLogout = () => {
-        setToken(null);
-        setIsAuthenticated(false);
-        setUser(null);
-        destroyCookie(null, "token");
-        destroyCookie(null, "user");
+        logout();
+        // setToken(null);
+        // setIsAuthenticated(false);
+        // setUser(null);
+        // destroyCookie(null, "token");
+        // destroyCookie(null, "user");
         router.push("/login");  // Redirect to login page without reloading
     };
 
@@ -86,13 +87,13 @@ export default function PrimarySearchAppBar() {
     const renderMobileMenu = (
         <Menu
             anchorEl={mobileMoreAnchorEl}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            anchorOrigin={{ vertical: "top", horizontal: "right" }}
             id={mobileMenuId}
             keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
-            className='mt-12'
+            className="mt-12"
         >
             {isAuthenticated && (
                 <Box>
@@ -121,22 +122,23 @@ export default function PrimarySearchAppBar() {
                         </IconButton>
                         <p>Profile</p>
                     </MenuItem>
+                    {/* ✅ Logout added inside the authenticated user menu */}
+                    <MenuItem onClick={handleLogout}>
+                        <IconButton size="large" color="inherit">
+                            <LogoutIcon />
+                        </IconButton>
+                        <Typography>Logout</Typography>
+                    </MenuItem>
                 </Box>
             )}
-            <MenuItem onClick={handleMenuClose}>
-                {isAuthenticated ? (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }} onClick={handleLogout}>
-                        <LogoutIcon />
-                        <Typography>Logout</Typography>
-                    </Box>
-                ) : (
-                    <Box onClick={() => router.push("/login")}>
-                        <Typography>Signin</Typography>
-                    </Box>
-                )}
-            </MenuItem>
+            {!isAuthenticated && (
+                <MenuItem onClick={() => router.push("/login")}>
+                    <Typography>Signin</Typography>
+                </MenuItem>
+            )}
         </Menu>
     );
+    
     
 
 

@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 import { parseCookies, destroyCookie } from "nookies";
+import API_BASE_URL from "@/config/api";
 
 interface User {
   id: number;
@@ -27,16 +28,62 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // useEffect(() => {
+  //   const cookies = parseCookies();
+  //   const storedToken = cookies.token;
+  //   const storedUser = cookies.user ? JSON.parse(cookies.user) : null;
+
+  //   setToken(storedToken || null);
+  //   setIsAuthenticated(!!storedToken);
+  //   setUser(storedUser);
+  //   setIsLoading(false);
+  // }, []);
+
   useEffect(() => {
     const cookies = parseCookies();
+    console.log("Cookies on page load:", cookies); // Debugging
+  
     const storedToken = cookies.token;
     const storedUser = cookies.user ? JSON.parse(cookies.user) : null;
-
-    setToken(storedToken || null);
-    setIsAuthenticated(!!storedToken);
-    setUser(storedUser);
-    setIsLoading(false);
+  
+    if (!storedToken) {
+      console.log("No token found in cookies, skipping verification.");
+      setIsLoading(false);
+      return;
+    }
+  
+    verifyToken(storedToken, storedUser);
+  
+    async function verifyToken(token: string, user: User | null) {
+      try {
+        console.log("Verifying token:", token);
+  
+        const response = await fetch(`${API_BASE_URL}/users`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, 
+          },
+        });
+  
+        if (response.ok) {
+          console.log("Token is valid.");
+          setToken(token);
+          setIsAuthenticated(true);
+          setUser(user);
+        } else {
+          console.log("Invalid token detected, clearing cookies.");
+          logout();
+        }
+      } catch (error) {
+        console.error("Error verifying token:", error);
+        logout();
+      } finally {
+        setIsLoading(false);
+      }
+    }
   }, []);
+  
 
   const logout = () => {
     setToken(null);
