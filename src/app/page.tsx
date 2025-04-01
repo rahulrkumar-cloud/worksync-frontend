@@ -104,7 +104,7 @@ import { useAuth } from "@/context/TokenProvider"; // ✅ Import the useAuth hoo
 import { API_BASE_URL, API_Socket_URL } from "@/config/api";
 
 // const socket = io(`${API_Socket_URL}`); // Connect to the server
-const socket = io("http://localhost:3000"); // Connect to the server
+const socket = io(`${API_Socket_URL}`); // Connect to the server
 
 interface Message {
   text: string;
