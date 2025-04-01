@@ -27,31 +27,31 @@
 //   useEffect(() => {
 //     if (!token) return; // ✅ Wait until token is available
 
-//     const fetchUsers = async () => {
-//       try {
-//         setLoading(true);
-//         setError(null);
+    // const fetchUsers = async () => {
+    //   try {
+    //     setLoading(true);
+    //     setError(null);
 
-//         const res = await fetch(`${API_BASE_URL}/users`, {
-//           method: "GET",
-//           headers: {
-//             "Content-Type": "application/json",
-//             Authorization: `Bearer ${token}`, // ✅ Use latest token
-//           },
-//         });
+    //     const res = await fetch(`${API_BASE_URL}/users`, {
+    //       method: "GET",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `Bearer ${token}`, // ✅ Use latest token
+    //       },
+    //     });
 
-//         if (!res.ok) {
-//           throw new Error("Failed to fetch users");
-//         }
+    //     if (!res.ok) {
+    //       throw new Error("Failed to fetch users");
+    //     }
 
-//         const data = await res.json();
-//         setUsers(data);
-//       } catch (err) {
-//         setError((err as Error).message);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
+    //     const data = await res.json();
+    //     setUsers(data);
+    //   } catch (err) {
+    //     setError((err as Error).message);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
 
 //     fetchUsers();
 //   }, [token]); // ✅ Runs only when token changes
@@ -95,78 +95,124 @@
 // ChatComponent.tsx (React Component)
 // ChatApp.tsx
 "use client";
-
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Box, Typography, TextField, IconButton, Avatar, List, ListItem, ListItemText, Paper } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import { io } from "socket.io-client";  // Import socket.io-client
-import { v4 as uuidv4 } from "uuid"; 
-import {API_Socket_URL} from "@/config/api";
+import { io } from "socket.io-client";
+import { useAuth } from "@/context/TokenProvider"; // ✅ Import the useAuth hook
+import { API_BASE_URL } from "@/config/api";
+
+const socket = io("http://localhost:3000"); // Connect to the server
+
 interface Message {
-  id: any; // Change this to string
   text: string;
-  sender: "me" | "other";
-  timestamp: string;
+  sender: string;
+  recipient: string;
 }
 
-
-interface Chat {
-  id: number;
+interface User {
+  id: string;
   name: string;
+  email: string; // Add email to user
 }
 
-const socket = io(`${API_Socket_URL}`); // Connect to your backend server
-// const socket = io("https://work-sync-backend.vercel.app");
-export default function ChatApp() {
-  const [messages, setMessages] = useState<Message[]>([
-    { id: 1, text: "Hello, John! How are you?", sender: "other", timestamp: "10:30 AM" },
-    { id: 2, text: "I'm good, thanks! What about you?", sender: "me", timestamp: "10:31 AM" },
-  ]);
+const ChatApp = () => {
+  const { user, token, isAuthenticated } = useAuth(); // ✅ Get user, token, and authentication status from context
+  const [messages, setMessages] = useState<Message[]>([]); 
   const [input, setInput] = useState("");
-  const [activeChat, setActiveChat] = useState<Chat | null>(null);
+  const [activeChat, setActiveChat] = useState<string>(""); // Store the recipient username
+  const [username, setUsername] = useState<string>(""); // Store the user's username
+  const [users, setUsers] = useState<User[]>([]); // Store fetched users
+  const [loading, setLoading] = useState<boolean>(false); // Loading state
+  const [error, setError] = useState<string | null>(null); // Error state
 
-  const chats: Chat[] = [
-    { id: 1, name: "John Doe" },
-    { id: 2, name: "Rahul Kumar" },
-  ];
+  // Fetch the list of users
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-  // When the component mounts, set up socket listeners
+      const res = await fetch(`${API_BASE_URL}/users`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ✅ Use latest token
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch users");
+      }
+
+      const data = await res.json();
+      console.log("!filteredUsers",data)
+      // Filter out the current logged-in user from the list of users
+      const filteredUsers = data.filter((userItem: User) => userItem.email !== user?.email);      
+      console.log("filteredUsers",filteredUsers)
+      
+      setUsers(filteredUsers); // Set the filtered users to state
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
+    // Fetch users when the component mounts
+    fetchUsers();
+
+    // Ensure that the username is set from the user context when authenticated
+    if (user?.name) {
+      setUsername(user.name); // Set username from context
+    }
+  }, [user?.name, token]); // Runs whenever user name or token changes
+
+  useEffect(() => {
+    if (username) {
+      console.log(`Emitting setUsername for ${username}`); // Debug log
+      socket.emit("setUsername", username); // Emit the username to associate with socket ID
+    }
+
     socket.on("receiveMessage", (message: Message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+      console.log(`Received message from ${message.sender}: ${message.text}`);
+      // Only add the message if the recipient is the active chat
+      if (message.recipient === activeChat || message.sender === activeChat) {
+        setMessages((prevMessages) => [...prevMessages, message]);
+      }
     });
 
-    // Cleanup on unmount
     return () => {
       socket.off("receiveMessage");
     };
-  }, []);
+  }, [username, activeChat]); // Ensure username and activeChat are set
 
   const sendMessage = () => {
-    if (!input.trim()) return;
-  
+    if (!input.trim() || !activeChat) return;
+
     const newMessage: Message = {
-      id: uuidv4() as string,  // Explicitly cast to string
       text: input,
-      sender: "me",
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      sender: username, // Ensure the sender is included
+      recipient: activeChat,
     };
-    
-  
+
+    console.log("newMessage:", newMessage);
+    console.log(`Sending message from ${username} to ${activeChat}: ${input}`);
+
     // Emit the message to the server
     socket.emit("sendMessage", newMessage);
-    setMessages([...messages, newMessage]); // Optimistic UI update
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
     setInput("");
   };
 
-  const handleChatClick = (chat: Chat) => {
-    setActiveChat(chat);
-    setMessages([
-      { id: 1, text: `Hello, ${chat.name}! How are you?`, sender: "other", timestamp: "10:30 AM" },
-      { id: 2, text: `I'm good, thanks! What about you?`, sender: "me", timestamp: "10:31 AM" },
-    ]);
+  const handleChatClick = (username: string) => {
+    console.log("Setting active chat to:", username); // Debug log
+    setActiveChat(username);
+    setMessages([]); // Clear the previous chat messages when switching chat
   };
+
+  console.log("activeChat", activeChat); // Debug log
 
   return (
     <Box className="flex h-screen bg-gray-50">
@@ -174,19 +220,26 @@ export default function ChatApp() {
       <Box className="w-1/4 bg-white p-6 border-r border-gray-200 hidden md:block">
         <Typography variant="h6" className="mb-6 text-gray-800 font-semibold">Chats</Typography>
         <List>
-          {chats.map((chat) => (
-            <ListItem
-              key={chat.id}
-              component="button"
-              className={`flex items-center hover:bg-gray-100 rounded-md p-2 transition ${activeChat?.id === chat.id ? 'bg-blue-100' : ''}`}
-              onClick={() => handleChatClick(chat)}
-            >
-              <Avatar className="bg-blue-500 text-white mr-3">
-                <ChatBubbleOutlineIcon />
-              </Avatar>
-              <ListItemText primary={chat.name} secondary="Hey!" className="text-gray-800" />
-            </ListItem>
-          ))}
+          {/* Map over the fetched users */}
+          {loading ? (
+            <Typography>Loading users...</Typography>
+          ) : error ? (
+            <Typography color="error">{error}</Typography>
+          ) : (
+            users.map((chatUser) => (
+              <ListItem
+                key={chatUser.id} // Use unique user id
+                component="button"
+                className={`flex items-center hover:bg-gray-100 rounded-md p-2 transition ${activeChat === chatUser.name ? 'bg-blue-100' : ''}`}
+                onClick={() => handleChatClick(chatUser.name)}
+              >
+                <Avatar className="bg-blue-500 text-white mr-3">
+                  <ChatBubbleOutlineIcon />
+                </Avatar>
+                <ListItemText primary={chatUser.name} secondary={chatUser.email} className="text-gray-800" />
+              </ListItem>
+            ))
+          )}
         </List>
       </Box>
 
@@ -196,8 +249,8 @@ export default function ChatApp() {
         <Box className="bg-white p-4 border-b border-gray-200 flex items-center shadow-md">
           {activeChat ? (
             <>
-              <Avatar className="mr-3 bg-blue-500 text-white">{activeChat.name[0]}</Avatar>
-              <Typography variant="h6" className="text-gray-800 font-semibold">{activeChat.name}</Typography>
+              <Avatar className="mr-3 bg-blue-500 text-white">{activeChat[0]}</Avatar>
+              <Typography variant="h6" className="text-gray-800 font-semibold">{activeChat}</Typography>
             </>
           ) : (
             <Typography variant="h6" className="text-gray-800 font-semibold">Select a Chat</Typography>
@@ -206,10 +259,10 @@ export default function ChatApp() {
 
         {/* Chat Messages */}
         <Box className="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-100">
-        {messages.map((msg) => (
+          {messages.map((msg, index) => (
             <Box
-              key={msg.id}
-              className={`flex ${msg.sender === "me" ? "justify-end" : "justify-start"}`}
+              key={index}
+              className={`flex ${msg.sender === username ? "justify-end" : "justify-start"}`}
             >
               <Paper
                 elevation={3}
@@ -217,14 +270,11 @@ export default function ChatApp() {
                   p: 3,
                   borderRadius: "1rem",
                   maxWidth: "20rem",
-                  backgroundColor: msg.sender === "me" ? "green" : "lightgray", // Dynamic background color
-                  color: msg.sender === "me" ? "white" : "black",
+                  backgroundColor: msg.sender === username ? "green" : "lightgray",
+                  color: msg.sender === username ? "white" : "black",
                 }}
               >
                 <Typography variant="body1" className="font-medium">{msg.text}</Typography>
-                <Typography variant="caption" className="block text-right text-xs mt-1 opacity-70">
-                  {msg.timestamp}
-                </Typography>
               </Paper>
             </Box>
           ))}
@@ -248,6 +298,6 @@ export default function ChatApp() {
       </Box>
     </Box>
   );
-}
+};
 
-
+export default ChatApp;
