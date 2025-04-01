@@ -104,7 +104,10 @@ import { useAuth } from "@/context/TokenProvider"; // ✅ Import the useAuth hoo
 import { API_BASE_URL, API_Socket_URL } from "@/config/api";
 
 // const socket = io(`${API_Socket_URL}`); // Connect to the server
-const socket = io(`${API_Socket_URL}`); // Connect to the server
+const socket = io(`${API_Socket_URL}`, {
+  transports: ["websocket"], // Only allow WebSocket
+  withCredentials: true,
+});
 
 interface Message {
   text: string;
