@@ -3,7 +3,7 @@
 // import React, { useState } from "react";
 // import { TextField, Button, Card, Typography, Grid } from "@mui/material";
 // import { useRouter } from "next/navigation";
-// import API_BASE_URL from "@/config/api";
+// import {API_BASE_URL} from "@/config/api";
 // import { useAuth } from "@/context/TokenProvider";
 // import Cookies from "js-cookie";
 
@@ -110,7 +110,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import API_BASE_URL from "@/config/api";
+import {API_BASE_URL} from "@/config/api";
 import { useAuth } from "@/context/TokenProvider"; // assuming you have a context provider for authentication
 import Cookies from "js-cookie";
 

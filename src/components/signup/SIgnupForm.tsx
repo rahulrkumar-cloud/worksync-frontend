@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import API_BASE_URL from "@/config/api";
+import {API_BASE_URL} from "@/config/api";
 
 const SignupForm: React.FC = () => {
   const router = useRouter();
