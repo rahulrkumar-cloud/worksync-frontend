@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         console.log("Verifying token:", token);
   
-        const response = await fetch(`${API_BASE_URL}/users`, {
+        const response = await fetch(`${API_BASE_URL}/auth/check-token`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
