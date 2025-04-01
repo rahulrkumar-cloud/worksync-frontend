@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/TokenProvider";
 import { CircularProgress, Box } from "@mui/material"; // ✅ Import MUI loader
-import PrimarySearchAppBar from "@/components/WorkSyncNavbar/PrimarySearchAppBar"
+import PrimarySearchAppBar from "@/components/WorkSyncNavbar/PrimarySearchAppBar";
+
 interface WrapperProps {
   children: React.ReactNode;
 }
@@ -23,17 +24,20 @@ const Wrapper: React.FC<WrapperProps> = ({ children }) => {
 
     setIsChecking(false);
 
-    if (!token && pathname !== "/login") {
+    // If the user is not logged in and not on Login or Signup page, redirect to login
+    if (!token && pathname !== "/login" && pathname !== "/signup") {
       console.log("🚫 No token found! Redirecting to login...");
       router.replace("/login");
-    } else if (token && pathname === "/login") {
+    } 
+    // If the user is logged in and on login/signup page, redirect to homepage
+    else if (token && (pathname === "/login" || pathname === "/signup")) {
       console.log("✅ User is logged in! Redirecting to home...");
       router.replace("/");
     }
   }, [token, router, pathname]);
 
   // 🛑 Show loading spinner while checking token
-  if (isChecking || (!token && pathname !== "/login") || (token && pathname === "/login")) {
+  if (isChecking || (!token && (pathname !== "/login" && pathname !== "/signup")) || (token && (pathname === "/login" || pathname === "/signup"))) {
     return (
       <Box
         sx={{
@@ -48,8 +52,7 @@ const Wrapper: React.FC<WrapperProps> = ({ children }) => {
     );
   }
 
-  return <div className="wrapper">
-    {children}</div>;
+  return <div className="wrapper">{children}</div>;
 };
 
 export default Wrapper;
