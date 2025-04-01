@@ -145,7 +145,7 @@ const SignupForm: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white p-4 rounded-lg shadow-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white p-4 rounded-lg shadow-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 cursor-pointer"
           >
             {loading ? "Signing Up..." : "Sign Up"}
           </button>

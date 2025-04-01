@@ -1,21 +1,21 @@
 "use client"
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Badge from '@mui/material/Badge';
-import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import MailIcon from '@mui/icons-material/Mail';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import MoreIcon from '@mui/icons-material/MoreVert';
-import { useAuth } from '@/context/TokenProvider';
-import { destroyCookie } from 'nookies';
+import Badge from '@mui/material/Badge';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
 import { useRouter } from "next/navigation";
+import MenuItem from '@mui/material/MenuItem';
+import MailIcon from '@mui/icons-material/Mail';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import { useAuth } from '@/context/TokenProvider';
+import MoreIcon from '@mui/icons-material/MoreVert';
 import LogoutIcon from '@mui/icons-material/Logout';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+
 export default function PrimarySearchAppBar() {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -23,7 +23,7 @@ export default function PrimarySearchAppBar() {
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-    const { setToken, isAuthenticated, setIsAuthenticated, user, setUser,logout } = useAuth();
+    const { setToken, isAuthenticated, setIsAuthenticated, user, setUser, logout } = useAuth();
     const router = useRouter();
     console.log("isAuthenticatedisAuthenticatedisAuthenticated", user)
     const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -81,7 +81,7 @@ export default function PrimarySearchAppBar() {
             </MenuItem>
         </Menu>
     );
-    
+
 
     const mobileMenuId = 'primary-search-account-menu-mobile';
     const renderMobileMenu = (
@@ -131,15 +131,8 @@ export default function PrimarySearchAppBar() {
                     </MenuItem>
                 </Box>
             )}
-            {!isAuthenticated && (
-                <MenuItem onClick={() => router.push("/login")}>
-                    <Typography>Signin</Typography>
-                </MenuItem>
-            )}
         </Menu>
     );
-    
-    
 
 
     return (
@@ -156,59 +149,50 @@ export default function PrimarySearchAppBar() {
                         >
                             WorkSync
                         </Typography>
-
-                        <Typography
-                            variant="h6"
-                            noWrap
-                            component="div"
-                            sx={{ display: { xs: 'none', md: 'flex' }, cursor: 'pointer', ml: 3 }}
-                            onClick={() => router.push("/about")}
-                        >
-                            About
-                        </Typography>
-
-
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                         <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                             {isAuthenticated && (
-                                <><IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                                    <Badge badgeContent={4} color="error">
-                                        <MailIcon />
-                                    </Badge>
-                                </IconButton><IconButton size="large" aria-label="show 17 new notifications" color="inherit">
+                                <><>
+                                    <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+                                        <Badge badgeContent={4} color="error">
+                                            <MailIcon />
+                                        </Badge>
+                                    </IconButton>
+                                    <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
                                         <Badge badgeContent={17} color="error">
                                             <NotificationsIcon />
                                         </Badge>
-                                    </IconButton></>
-                            )}
-                            <IconButton
-                                size="large"
-                                edge="end"
-                                aria-label="account of current user"
-                                aria-controls={menuId}
-                                aria-haspopup="true"
-                                onClick={handleProfileMenuOpen}
-                                color="inherit"
-                            >
-                                <AccountCircle />
-                            </IconButton>
+                                    </IconButton>
+                                </>
+                                    <IconButton
+                                        size="large"
+                                        edge="end"
+                                        aria-label="account of current user"
+                                        aria-controls={menuId}
+                                        aria-haspopup="true"
+                                        onClick={handleProfileMenuOpen}
+                                        color="inherit"
+                                    >
+                                        <AccountCircle />
+                                    </IconButton></>)}
                         </Box>
                         <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-                            <IconButton
-                                size="large"
-                                aria-label="show more"
-                                aria-controls={mobileMenuId}
-                                aria-haspopup="true"
-                                onClick={handleMobileMenuOpen}
-                                color="inherit"
-                            >
-                                <MoreIcon />
-                            </IconButton>
+                            {isAuthenticated && (
+                                <IconButton
+                                    size="large"
+                                    aria-label="show more"
+                                    aria-controls={mobileMenuId}
+                                    aria-haspopup="true"
+                                    onClick={handleMobileMenuOpen}
+                                    color="inherit"
+                                >
+                                    <MoreIcon />
+                                </IconButton>
+                            )}
                         </Box>
                     </Box>
                 </Toolbar>
-
             </AppBar>
             {renderMobileMenu}
             {renderMenu}

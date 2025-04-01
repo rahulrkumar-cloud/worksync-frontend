@@ -206,7 +206,7 @@ const Login: React.FC = () => {
           <div className="mb-6">
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white p-4 rounded-lg shadow-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105"
+              className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white p-4 rounded-lg shadow-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 cursor-pointer"
               disabled={loading}
             >
               {loading ? "Signing In..." : "Sign In"}
