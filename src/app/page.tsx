@@ -94,7 +94,7 @@
 // }
 // ChatComponent.tsx (React Component)
 // ChatApp.tsx
-"use client";
+"use client"
 import { useEffect, useState } from "react";
 import { Box, Typography, TextField, IconButton, Avatar, List, ListItem, ListItemText, Paper } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
@@ -103,7 +103,8 @@ import { io } from "socket.io-client";
 import { useAuth } from "@/context/TokenProvider"; // ✅ Import the useAuth hook
 import { API_BASE_URL, API_Socket_URL } from "@/config/api";
 
-const socket = io(`${API_Socket_URL}`); // Connect to the server
+// const socket = io(`${API_Socket_URL}`); // Connect to the server
+const socket = io("http://localhost:3000"); // Connect to the server
 
 interface Message {
   text: string;
@@ -114,20 +115,19 @@ interface Message {
 interface User {
   id: string;
   name: string;
-  email: string; // Add email to user
+  email: string;
 }
 
 const ChatApp = () => {
   const { user, token, isAuthenticated } = useAuth(); // ✅ Get user, token, and authentication status from context
-  const [messages, setMessages] = useState<Message[]>([]); 
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const [activeChat, setActiveChat] = useState<string>(""); // Store the recipient username
-  const [username, setUsername] = useState<string>(""); // Store the user's username
-  const [users, setUsers] = useState<User[]>([]); // Store fetched users
-  const [loading, setLoading] = useState<boolean>(false); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error state
+  const [activeChat, setActiveChat] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Fetch the list of users
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -137,7 +137,7 @@ const ChatApp = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // ✅ Use latest token
+          Authorization: `Bearer ${token}`, // Use token directly from useAuth
         },
       });
 
@@ -146,12 +146,8 @@ const ChatApp = () => {
       }
 
       const data = await res.json();
-      console.log("!filteredUsers",data)
-      // Filter out the current logged-in user from the list of users
-      const filteredUsers = data.filter((userItem: User) => userItem.email !== user?.email);      
-      console.log("filteredUsers",filteredUsers)
-      
-      setUsers(filteredUsers); // Set the filtered users to state
+      const filteredUsers = data.filter((userItem: User) => userItem.email !== user?.email);
+      setUsers(filteredUsers);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -160,24 +156,19 @@ const ChatApp = () => {
   };
 
   useEffect(() => {
-    // Fetch users when the component mounts
     fetchUsers();
 
-    // Ensure that the username is set from the user context when authenticated
     if (user?.name) {
-      setUsername(user.name); // Set username from context
+      setUsername(user.name);
     }
-  }, [user?.name, token]); // Runs whenever user name or token changes
+  }, [user?.name, token]);
 
   useEffect(() => {
     if (username) {
-      console.log(`Emitting setUsername for ${username}`); // Debug log
-      socket.emit("setUsername", username); // Emit the username to associate with socket ID
+      socket.emit("setUsername", username);
     }
 
     socket.on("receiveMessage", (message: Message) => {
-      console.log(`Received message from ${message.sender}: ${message.text}`);
-      // Only add the message if the recipient is the active chat
       if (message.recipient === activeChat || message.sender === activeChat) {
         setMessages((prevMessages) => [...prevMessages, message]);
       }
@@ -186,33 +177,26 @@ const ChatApp = () => {
     return () => {
       socket.off("receiveMessage");
     };
-  }, [username, activeChat]); // Ensure username and activeChat are set
+  }, [username, activeChat]);
 
   const sendMessage = () => {
     if (!input.trim() || !activeChat) return;
 
     const newMessage: Message = {
       text: input,
-      sender: username, // Ensure the sender is included
+      sender: username,
       recipient: activeChat,
     };
 
-    console.log("newMessage:", newMessage);
-    console.log(`Sending message from ${username} to ${activeChat}: ${input}`);
-
-    // Emit the message to the server
     socket.emit("sendMessage", newMessage);
     setMessages((prevMessages) => [...prevMessages, newMessage]);
     setInput("");
   };
 
   const handleChatClick = (username: string) => {
-    console.log("Setting active chat to:", username); // Debug log
     setActiveChat(username);
-    setMessages([]); // Clear the previous chat messages when switching chat
+    setMessages([]);
   };
-
-  console.log("activeChat", activeChat); // Debug log
 
   return (
     <Box className="flex h-screen bg-gray-50">
@@ -220,7 +204,6 @@ const ChatApp = () => {
       <Box className="w-1/4 bg-white p-6 border-r border-gray-200 hidden md:block">
         <Typography variant="h6" className="mb-6 text-gray-800 font-semibold">Chats</Typography>
         <List>
-          {/* Map over the fetched users */}
           {loading ? (
             <Typography>Loading users...</Typography>
           ) : error ? (
@@ -228,7 +211,7 @@ const ChatApp = () => {
           ) : (
             users.map((chatUser) => (
               <ListItem
-                key={chatUser.id} // Use unique user id
+                key={chatUser.id}
                 component="button"
                 className={`flex items-center hover:bg-gray-100 rounded-md p-2 transition ${activeChat === chatUser.name ? 'bg-blue-100' : ''}`}
                 onClick={() => handleChatClick(chatUser.name)}
