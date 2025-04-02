@@ -109,11 +109,10 @@ import { useAuth } from "@/context/TokenProvider";
 import { API_BASE_URL, API_Socket_URL } from "@/config/api";
 
 //  const socket = io(`${API_BASE_URL}`); // Connect to the server
-const socket = io("https://work-sync-backend.vercel.app", {
-  transports: ["polling"], // Change to polling
+const socket = io("http://localhost:3000", {
+  transports: ["websocket"],
   withCredentials: true,
 });
-
 
 
 interface Message {
