@@ -108,7 +108,7 @@ import { io } from "socket.io-client";
 import { useAuth } from "@/context/TokenProvider";
 import { API_BASE_URL, API_Socket_URL } from "@/config/api";
 
-const socket = io(`${API_Socket_URL}`, {
+const socket = io(`${API_BASE_URL}`, {
   transports: ["websocket"],
   withCredentials: true,
 });
