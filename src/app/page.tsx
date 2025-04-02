@@ -99,79 +99,141 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, TextField, Button, Typography } from "@mui/material";
 import { io, Socket } from "socket.io-client";
+import { API_BASE_URL } from "@/config/api";
+import { useAuth } from "@/context/TokenProvider";
 
-// Define message type
 interface Message {
   text: string;
-  sender: string;
+  senderId: string;
+}
+
+interface User {
+  id: string;
+  name: string;
 }
 
 export default function Chat() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState("");
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<string>("");
+
+  const { token, isAuthenticated, user } = useAuth();
+  const currentUserId = user?.id || "";
 
   useEffect(() => {
-    const newSocket = io("https://worksync-socket.onrender.com", {
-      transports: ["websocket"], // ✅ Ensure WebSocket transport
-    });
+    if (!currentUserId) return;
 
+    const newSocket = io("https://worksync-socket.onrender.com", { transports: ["websocket"] });
     setSocket(newSocket);
+    newSocket.emit("register", currentUserId);
 
-    newSocket.on("connect", () => {
-      console.log("Connected:", newSocket.id);
-    });
-
-    // ✅ Listen for messages
-    newSocket.on("message", (data: Message) => {
+    newSocket.on("privateMessage", (data: Message) => {
       setMessages((prevMessages) => [...prevMessages, data]);
     });
 
     return () => {
       newSocket.disconnect();
     };
-  }, []);
+  }, [currentUserId]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        if (!token) return;
+        const res = await fetch(`${API_BASE_URL}/users`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (!res.ok) throw new Error("Failed to fetch users");
+        const data: User[] = await res.json(); // ✅ Explicitly type data as User[]
+  
+        // Convert user IDs to strings
+        setUsers(data.map((user) => ({ ...user, id: String(user.id) }))); // ✅ No TypeScript error
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchUsers();
+  }, [token]);
+  
+  
 
   const handleSendMessage = () => {
-    if (!message.trim() || !socket) return;
+    if (!message.trim() || !socket || !selectedUser) return;
 
-    const msgData = { text: message, sender: socket.id };
+    const msgData: Message = { 
+      text: message, 
+      senderId: String(currentUserId), 
+    };
 
-    socket.emit("message", msgData); // ✅ Send message to server
-
-    setMessage(""); // ✅ Clear input field
+    socket.emit("privateMessage", { ...msgData, receiverId: selectedUser });
+    setMessages((prevMessages) => [...prevMessages, msgData]);
+    setMessage("");
   };
+  console.log("Logged-in User ID:", currentUserId);
+  console.log("Logged-in User ID:", users);
+  const loggedInUserId = String(currentUserId);
 
   return (
-    <Box sx={{ p: 2, width: "400px", mx: "auto", textAlign: "center" }}>
-      <Typography variant="h5" gutterBottom>Chat Room</Typography>
+    <div className="flex h-screen w-full">
+      {/* Sidebar */}
+      <div className="w-1/4 bg-gray-900 text-white p-4">
+        <h2 className="text-lg font-semibold mb-4">Chats</h2>
+        <ul>
+  {users
+    .filter(u => u.id !== loggedInUserId) // ✅ Compare strings correctly
+    .map(user => (
+      <li key={user.id} 
+          className={`p-3 cursor-pointer ${selectedUser === user.id ? 'bg-gray-700' : ''}`} 
+          onClick={() => setSelectedUser(user.id)}>
+        {user.name}
+      </li>
+    ))
+  }
+</ul>
+      </div>
+      
+      {/* Chat Section */}
+      <div className="flex flex-col w-3/4 h-full bg-gray-100">
+        <div className="bg-gray-800 text-white p-4 font-semibold">Chat with {selectedUser ? users.find(u => u.id === selectedUser)?.name || "Unknown" : "Select a user"}</div>
+        
+        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+          {messages.map((msg, index) => {
+            const sender = users.find(u => u.id === msg.senderId);
 
-      <Box sx={{ height: "300px", overflowY: "auto", border: "1px solid gray", p: 2, mb: 2 }}>
-        {messages.map((msg, index) => (
-          <Typography key={index} sx={{ textAlign: msg.sender === socket?.id ? "right" : "left" }}>
-            <strong>{msg.sender === socket?.id ? "You" : "User"}:</strong> {msg.text}
-          </Typography>
-        ))}
-      </Box>
 
-      <TextField
-        fullWidth
-        variant="outlined"
-        placeholder="Type a message..."
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <Button
-        fullWidth
-        variant="contained"
-        color="primary"
-        onClick={handleSendMessage}
-        sx={{ mt: 2 }}
-      >
-        Send
-      </Button>
-    </Box>
+            return (
+              <div 
+                key={index} 
+                className={`p-2 rounded-lg max-w-xs ${msg.senderId === currentUserId ? 'ml-auto bg-green-500 text-white text-right' : 'mr-auto bg-white text-black text-left'} flex flex-col`}
+              >
+                <span className="text-xs text-gray-500 mb-1">{sender ? sender.name : msg.senderId}</span>
+                {msg.text}
+              </div>
+            );
+          })}
+        </div>
+        
+        <div className="p-4 bg-white border-t flex items-center">
+          <input
+            type="text"
+            className="flex-1 p-2 border rounded-lg focus:outline-none"
+            placeholder="Type a message..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+          <button className="ml-2 bg-green-500 text-white p-2 rounded-lg" onClick={handleSendMessage}>Send</button>
+        </div>
+      </div>
+    </div>
   );
 }
+
+
