@@ -103,7 +103,7 @@ import { io, Socket } from "socket.io-client";
 import { API_BASE_URL } from "@/config/api";
 import { useAuth } from "@/context/TokenProvider";
 import { Avatar } from "@mui/material";
-
+import SendIcon from '@mui/icons-material/Send';
 interface Message {
   text: string;
   senderId: string;
@@ -112,6 +112,7 @@ interface Message {
 interface User {
   id: string;
   name: string;
+  username: string;
 }
 
 export default function Chat() {
@@ -191,7 +192,7 @@ export default function Chat() {
   return (
     <div className="flex h-screen w-full md:flex-row flex-col">
       {/* Sidebar */}
-      <div className={`md:w-1/4 w-full bg-gray-900 text-white p-4 flex-shrink-0 ${selectedUser ? 'hidden md:block' : 'block'}`}> 
+      <div className={`md:w-1/4 w-full bg-gray-900 text-white p-4 flex-shrink-0 ${selectedUser ? 'hidden md:block' : 'block'}`}>
         <h2 className="text-lg font-semibold mb-4">Chats</h2>
         <ul className="space-y-2">
           {users.filter((u) => u.id !== currentUserId).map((user) => (
@@ -200,8 +201,8 @@ export default function Chat() {
               className={`p-3 cursor-pointer rounded-lg flex items-center space-x-2 ${selectedUser === user.id ? "bg-gray-700" : "hover:bg-gray-800"}`}
               onClick={() => setSelectedUser(user.id)}
             >
-              <Avatar className="bg-blue-500 text-white">{user.name.charAt(0)}</Avatar>
-              <span>{user.name}</span>
+              <Avatar className="bg-blue-500 text-white">{user.username.charAt(0)}</Avatar>
+              <span>{user.username}</span>
             </li>
           ))}
         </ul>
@@ -219,17 +220,28 @@ export default function Chat() {
             {messages[selectedUser]?.map((msg, index) => {
               const isSentByCurrentUser = msg.senderId === currentUserId;
               return (
-                <div
-                  key={index}
-                  className={`p-3 rounded-lg max-w-xs ${
-                    isSentByCurrentUser ? "ml-auto bg-green-500 text-white" : "mr-auto bg-white text-black"
-                  }`}
-                >
-                  {msg.text}
+                <div key={index} className="relative flex">
+                  <div
+                    className={`relative p-3 max-w-[80%] w-fit break-words rounded-lg shadow-md ${isSentByCurrentUser
+                      ? "ml-auto bg-[#d9fdd3] text-black rounded-br-none"
+                      : "mr-auto bg-white text-black rounded-bl-none"
+                      }`}
+                  >
+                    {msg.text}
+                    {/* WhatsApp-style message tail */}
+                    <span
+                      className={`absolute bottom-0 w-2 h-2 ${isSentByCurrentUser
+                        ? "-right-1 bg-[#d9fdd3] rotate-45"
+                        : "-left-1 bg-white rotate-45"
+                        }`}
+                    />
+                  </div>
                 </div>
               );
             })}
           </div>
+
+
 
           <div className="p-4 bg-white border-t flex items-center sticky bottom-0 w-full">
             <input
@@ -240,9 +252,10 @@ export default function Chat() {
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyDown}
             />
-            <button className="ml-2 bg-green-500 text-white p-3 rounded-lg" onClick={handleSendMessage}>
-              Send
+            <button className="ml-2 bg-green-500 text-white p-3 rounded-full flex items-center justify-center" onClick={handleSendMessage}>
+              <SendIcon className="w-5 h-5" />
             </button>
+
           </div>
         </div>
       )}

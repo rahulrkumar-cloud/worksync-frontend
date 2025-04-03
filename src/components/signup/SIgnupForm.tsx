@@ -6,6 +6,7 @@ import {API_BASE_URL} from "@/config/api";
 const SignupForm: React.FC = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
+    username:"",
     name: "",
     email: "",
     password: "",
@@ -44,6 +45,7 @@ const SignupForm: React.FC = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          username:formData.username,
           name: formData.name,
           email: formData.email,
           password: formData.password,
@@ -59,6 +61,7 @@ const SignupForm: React.FC = () => {
       alert("Signup successful! Redirecting to login...");
       router.push("/login");
     } catch (err: any) {
+      console.log("err",err)
       setError(err.message); // ✅ Now displays: "Email already exists. Please use a different email."
     } finally {
       setLoading(false);
@@ -72,6 +75,20 @@ const SignupForm: React.FC = () => {
         {error && <p className="text-red-500 text-center">{error}</p>} {/* ✅ Shows error message */}
 
         <form onSubmit={handleSubmit}>
+        <div className="mb-4">
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              required
+              className="w-full p-4 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+            />
+          </div>
           <div className="mb-4">
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
               Name

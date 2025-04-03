@@ -136,36 +136,39 @@ const Login: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
+  
     try {
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
+  
       const data = await response.json();
-
+      console.log("Response data:", data); // 🔍 Check backend response in console
+  
       if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+        throw new Error(data.message || "Invalid Credential"); // 🛠 Ensure correct message
       }
-
+  
       // ✅ Set token and authentication status
       setToken(data.token);
       setIsAuthenticated(true);
-      setUser(data.user); // Store user data in the context
-
+      setUser(data.user);
+  
       // Store token and user in cookies for persistence
       Cookies.set("token", data.token, { expires: 7 });
       Cookies.set("user", JSON.stringify(data.user), { expires: 7 });
-
-      router.push("/"); // Redirect to homepage or dashboard after login
+  
+      router.push("/"); // Redirect after login
     } catch (err: any) {
-      setError(err.message); // Handle error if login fails
+      console.log("Error caught:", err.message); // 🔍 Debug actual error
+      setError(err.message); // Display correct error message
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600">
