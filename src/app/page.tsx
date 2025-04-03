@@ -102,6 +102,7 @@ import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { API_BASE_URL } from "@/config/api";
 import { useAuth } from "@/context/TokenProvider";
+import { Avatar } from "@mui/material";
 
 interface Message {
   text: string;
@@ -115,13 +116,13 @@ interface User {
 
 export default function Chat() {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<{ [key: string]: Message[] }>({});
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>("");
 
   const { token, isAuthenticated, user } = useAuth();
-  const currentUserId = user?.id || "";
+  const currentUserId = String(user?.id || "");
 
   useEffect(() => {
     if (!currentUserId) return;
@@ -131,7 +132,10 @@ export default function Chat() {
     newSocket.emit("register", currentUserId);
 
     newSocket.on("privateMessage", (data: Message) => {
-      setMessages((prevMessages) => [...prevMessages, data]);
+      setMessages((prev) => ({
+        ...prev,
+        [String(data.senderId)]: [...(prev[String(data.senderId)] || []), data],
+      }));
     });
 
     return () => {
@@ -150,90 +154,98 @@ export default function Chat() {
             Authorization: `Bearer ${token}`,
           },
         });
-  
+
         if (!res.ok) throw new Error("Failed to fetch users");
-        const data: User[] = await res.json(); // ✅ Explicitly type data as User[]
-  
-        // Convert user IDs to strings
-        setUsers(data.map((user) => ({ ...user, id: String(user.id) }))); // ✅ No TypeScript error
+        const data: User[] = await res.json();
+
+        setUsers(data.map((user) => ({ ...user, id: String(user.id) })));
       } catch (err) {
         console.error(err);
       }
     };
     fetchUsers();
   }, [token]);
-  
-  
 
   const handleSendMessage = () => {
     if (!message.trim() || !socket || !selectedUser) return;
 
-    const msgData: Message = { 
-      text: message, 
-      senderId: String(currentUserId), 
+    const msgData: Message = {
+      text: message,
+      senderId: String(currentUserId),
     };
 
     socket.emit("privateMessage", { ...msgData, receiverId: selectedUser });
-    setMessages((prevMessages) => [...prevMessages, msgData]);
+    setMessages((prev) => ({
+      ...prev,
+      [String(selectedUser)]: [...(prev[String(selectedUser)] || []), msgData],
+    }));
     setMessage("");
   };
-  console.log("Logged-in User ID:", currentUserId);
-  console.log("Logged-in User ID:", users);
-  const loggedInUserId = String(currentUserId);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSendMessage();
+    }
+  };
 
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex h-screen w-full md:flex-row flex-col">
       {/* Sidebar */}
-      <div className="w-1/4 bg-gray-900 text-white p-4">
+      <div className={`md:w-1/4 w-full bg-gray-900 text-white p-4 flex-shrink-0 ${selectedUser ? 'hidden md:block' : 'block'}`}> 
         <h2 className="text-lg font-semibold mb-4">Chats</h2>
-        <ul>
-  {users
-    .filter(u => u.id !== loggedInUserId) // ✅ Compare strings correctly
-    .map(user => (
-      <li key={user.id} 
-          className={`p-3 cursor-pointer ${selectedUser === user.id ? 'bg-gray-700' : ''}`} 
-          onClick={() => setSelectedUser(user.id)}>
-        {user.name}
-      </li>
-    ))
-  }
-</ul>
+        <ul className="space-y-2">
+          {users.filter((u) => u.id !== currentUserId).map((user) => (
+            <li
+              key={user.id}
+              className={`p-3 cursor-pointer rounded-lg flex items-center space-x-2 ${selectedUser === user.id ? "bg-gray-700" : "hover:bg-gray-800"}`}
+              onClick={() => setSelectedUser(user.id)}
+            >
+              <Avatar className="bg-blue-500 text-white">{user.name.charAt(0)}</Avatar>
+              <span>{user.name}</span>
+            </li>
+          ))}
+        </ul>
       </div>
-      
+
       {/* Chat Section */}
-      <div className="flex flex-col w-3/4 h-full bg-gray-100">
-        <div className="bg-gray-800 text-white p-4 font-semibold">Chat with {selectedUser ? users.find(u => u.id === selectedUser)?.name || "Unknown" : "Select a user"}</div>
-        
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
-          {messages.map((msg, index) => {
-            const sender = users.find(u => u.id === msg.senderId);
+      {selectedUser && (
+        <div className="flex flex-col md:w-3/4 w-full h-screen bg-gray-100">
+          <div className="bg-gray-800 text-white p-4 font-semibold sticky top-0 flex justify-between items-center">
+            <button className="md:hidden bg-gray-700 px-3 py-1 rounded" onClick={() => setSelectedUser("")}>Back</button>
+            <span>{users.find((u) => u.id === selectedUser)?.name || "Unknown"}</span>
+          </div>
 
+          <div className="flex-1 overflow-y-auto p-4 space-y-2 h-full">
+            {messages[selectedUser]?.map((msg, index) => {
+              const isSentByCurrentUser = msg.senderId === currentUserId;
+              return (
+                <div
+                  key={index}
+                  className={`p-3 rounded-lg max-w-xs ${
+                    isSentByCurrentUser ? "ml-auto bg-green-500 text-white" : "mr-auto bg-white text-black"
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              );
+            })}
+          </div>
 
-            return (
-              <div 
-                key={index} 
-                className={`p-2 rounded-lg max-w-xs ${msg.senderId === currentUserId ? 'ml-auto bg-green-500 text-white text-right' : 'mr-auto bg-white text-black text-left'} flex flex-col`}
-              >
-                <span className="text-xs text-gray-500 mb-1">{sender ? sender.name : msg.senderId}</span>
-                {msg.text}
-              </div>
-            );
-          })}
+          <div className="p-4 bg-white border-t flex items-center sticky bottom-0 w-full">
+            <input
+              type="text"
+              className="flex-1 p-3 border rounded-lg focus:outline-none"
+              placeholder="Type a message..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            <button className="ml-2 bg-green-500 text-white p-3 rounded-lg" onClick={handleSendMessage}>
+              Send
+            </button>
+          </div>
         </div>
-        
-        <div className="p-4 bg-white border-t flex items-center">
-          <input
-            type="text"
-            className="flex-1 p-2 border rounded-lg focus:outline-none"
-            placeholder="Type a message..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
-          <button className="ml-2 bg-green-500 text-white p-2 rounded-lg" onClick={handleSendMessage}>Send</button>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
-
-
