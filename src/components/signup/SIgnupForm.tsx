@@ -73,7 +73,7 @@ const SignupForm: React.FC = () => {
   useEffect(() => {
     const checkUsername = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/username", {
+        const response = await fetch(`${API_BASE_URL}/username`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
