@@ -17,7 +17,7 @@ const SignupForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [usernameError, setUsernameError] = useState<string | null>(null);
-  const [isValidUsername,setIsValidUsername]=useState<boolean>(false);
+  const [isValidUsername, setIsValidUsername] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -106,9 +106,17 @@ const SignupForm: React.FC = () => {
   console.log("formData", formData, usernameError)
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600">
-      <div className="bg-white p-10 rounded-lg shadow-2xl w-full sm:w-96 space-y-6">
-        <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">Create Your Account</h2>
+    <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 px-8">
+      <div className="bg-white p-10 rounded-lg shadow-2xl w-full sm:w-96 space-y-6 mt-4">
+        <div className="relative text-center">
+          <h2 className="text-5xl font-extrabold text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text drop-shadow-xl tracking-tight leading-tight mb-6">
+            Create Your Account & Get Started!
+          </h2>
+          <svg className="absolute left-1/2 -translate-x-1/2 bottom-0 w-48 md:w-64 h-6 text-pink-500 animate-bounce" viewBox="0 0 200 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 20C30 5 70 30 100 10C130 -10 170 30 195 5" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+          </svg>
+        </div>
+
         {error && <p className="text-red-500 text-center">{error}</p>} {/* ✅ Shows error message */}
         {usernameError && <p className="text-red-500 text-center">{usernameError}</p>}
         <form onSubmit={handleSubmit}>
@@ -127,7 +135,7 @@ const SignupForm: React.FC = () => {
                 className="w-full p-4 pr-12 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
               />
               {/* Green-colored icon positioned inside the input */}
-              {isValidUsername&& formData.username.trim() !== "" &&<VerifiedRoundedIcon className="absolute right-4 top-1/2 transform -translate-y-1/2 text-green-500" />}
+              {isValidUsername && formData.username.trim() !== "" && <VerifiedRoundedIcon className="absolute right-4 top-1/2 transform -translate-y-1/2 text-green-500" />}
             </div>
           </div>
           <div className="mb-4">
@@ -203,7 +211,7 @@ const SignupForm: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white p-4 rounded-lg shadow-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 cursor-pointer"
+            className="w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 text-white p-4 rounded-lg shadow-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 cursor-pointer"
           >
             {loading ? "Signing Up..." : "Sign Up"}
           </button>

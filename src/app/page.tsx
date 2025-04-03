@@ -103,7 +103,8 @@ import { io, Socket } from "socket.io-client";
 import { API_BASE_URL } from "@/config/api";
 import { useAuth } from "@/context/TokenProvider";
 import { Avatar } from "@mui/material";
-import SendIcon from '@mui/icons-material/Send';
+import SendIcon from "@mui/icons-material/Send";
+
 interface Message {
   text: string;
   senderId: string;
@@ -190,15 +191,15 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex h-screen w-full md:flex-row flex-col">
+    <div className="flex min-h-screen w-full md:flex-row flex-col bg-gradient-to-r from-indigo-500 to-purple-600 ">
       {/* Sidebar */}
-      <div className={`md:w-1/4 w-full bg-gray-900 text-white p-4 flex-shrink-0 ${selectedUser ? 'hidden md:block' : 'block'}`}>
+      <div className={`md:w-1/4 w-full bg-gradient-to-r from-indigo-500 to-purple-600  text-white p-4 flex-shrink-0 ${selectedUser ? 'hidden md:block' : 'block'}`}>
         <h2 className="text-lg font-semibold mb-4">Chats</h2>
         <ul className="space-y-2">
           {users.filter((u) => u.id !== currentUserId).map((user) => (
             <li
               key={user.id}
-              className={`p-3 cursor-pointer rounded-lg flex items-center space-x-2 ${selectedUser === user.id ? "bg-gray-700" : "hover:bg-gray-800"}`}
+              className={`p-3 cursor-pointer rounded-lg flex items-center space-x-2 transition-all ${selectedUser === user.id ? "bg-gray-700" : "hover:bg-gray-800"}`}
               onClick={() => setSelectedUser(user.id)}
             >
               <Avatar className="bg-blue-500 text-white">{user.username.charAt(0)}</Avatar>
@@ -210,7 +211,7 @@ export default function Chat() {
 
       {/* Chat Section */}
       {selectedUser && (
-        <div className="flex flex-col md:w-3/4 w-full h-screen bg-gray-100">
+        <div className="flex flex-col md:w-3/4 w-full h-screen bg-white shadow-lg rounded-lg">
           <div className="bg-gray-800 text-white p-4 font-semibold sticky top-0 flex justify-between items-center">
             <button className="md:hidden bg-gray-700 px-3 py-1 rounded" onClick={() => setSelectedUser("")}>Back</button>
             <span>{users.find((u) => u.id === selectedUser)?.name || "Unknown"}</span>
@@ -222,40 +223,30 @@ export default function Chat() {
               return (
                 <div key={index} className="relative flex">
                   <div
-                    className={`relative p-3 max-w-[80%] w-fit break-words rounded-lg shadow-md ${isSentByCurrentUser
-                      ? "ml-auto bg-[#d9fdd3] text-black rounded-br-none"
-                      : "mr-auto bg-white text-black rounded-bl-none"
+                    className={`relative p-3 max-w-[80%] w-fit break-words rounded-lg shadow-md transition-all ${isSentByCurrentUser
+                      ? "ml-auto bg-green-500 text-white rounded-br-none"
+                      : "mr-auto bg-gray-300 text-black rounded-bl-none"
                       }`}
                   >
                     {msg.text}
-                    {/* WhatsApp-style message tail */}
-                    <span
-                      className={`absolute bottom-0 w-2 h-2 ${isSentByCurrentUser
-                        ? "-right-1 bg-[#d9fdd3] rotate-45"
-                        : "-left-1 bg-white rotate-45"
-                        }`}
-                    />
                   </div>
                 </div>
               );
             })}
           </div>
 
-
-
-          <div className="p-4 bg-white border-t flex items-center sticky bottom-0 w-full">
+          <div className="p-4 bg-gray-100 border-t flex items-center sticky bottom-0 w-full">
             <input
               type="text"
-              className="flex-1 p-3 border rounded-lg focus:outline-none"
+              className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition"
               placeholder="Type a message..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyDown}
             />
-            <button className="ml-2 bg-green-500 text-white p-3 rounded-full flex items-center justify-center" onClick={handleSendMessage}>
+            <button className="ml-2 bg-green-500 text-white p-3 rounded-full hover:bg-green-600 transition" onClick={handleSendMessage}>
               <SendIcon className="w-5 h-5" />
             </button>
-
           </div>
         </div>
       )}

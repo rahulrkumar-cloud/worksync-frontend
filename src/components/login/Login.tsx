@@ -110,7 +110,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {API_BASE_URL} from "@/config/api";
+import { API_BASE_URL } from "@/config/api";
 import { useAuth } from "@/context/TokenProvider"; // assuming you have a context provider for authentication
 import Cookies from "js-cookie";
 
@@ -137,53 +137,69 @@ const Login: React.FC = () => {
     setLoading(true);
     setError(null);
   
+    // Check if input is an email or username
+    const isEmail = formData.email.includes("@"); // Check for '@' to determine email
+  
+    const payload = isEmail
+      ? { email: formData.email, password: formData.password } // Login with email
+      : { username: formData.email, password: formData.password }; // Login with username
+  
     try {
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
   
       const data = await response.json();
-      console.log("Response data:", data); // 🔍 Check backend response in console
+      console.log("Response data:", data); // 🔍 Debug response
   
       if (!response.ok) {
-        throw new Error(data.message || "Invalid Credential"); // 🛠 Ensure correct message
+        throw new Error(data.message || "Invalid Credentials");
       }
   
-      // ✅ Set token and authentication status
+      // ✅ Store token and user data
       setToken(data.token);
       setIsAuthenticated(true);
       setUser(data.user);
   
-      // Store token and user in cookies for persistence
       Cookies.set("token", data.token, { expires: 7 });
       Cookies.set("user", JSON.stringify(data.user), { expires: 7 });
   
       router.push("/"); // Redirect after login
     } catch (err: any) {
-      console.log("Error caught:", err.message); // 🔍 Debug actual error
-      setError(err.message); // Display correct error message
+      console.log("Error caught:", err.message);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
   
 
+
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600">
-      <div className="bg-white p-10 rounded-lg shadow-2xl w-full sm:w-96 space-y-6">
-        <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">Login to Your Account</h2>
+    <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 px-8">
+      <div className="bg-white p-10 rounded-lg shadow-2xl w-full sm:w-96 space-y-6 mt-4">
+        <div className="relative text-center">
+          <h2 className="text-6xl font-extrabold text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text drop-shadow-xl tracking-tight leading-tight mb-6">
+            Welcome Back! Ready to Dive In?
+          </h2>
+          <svg className="absolute left-1/2 -translate-x-1/2 bottom-0 w-48 md:w-64 h-6 text-pink-500 animate-bounce" viewBox="0 0 200 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 20C30 5 70 30 100 10C130 -10 170 30 195 5" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+          </svg>
+        </div>
+
+
 
         {error && <div className="text-center text-red-500 mb-4">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
+              Email / User name
             </label>
             <input
-              type="email"
+              type=""
               id="email"
               name="email"
               value={formData.email}
@@ -209,7 +225,7 @@ const Login: React.FC = () => {
           <div className="mb-6">
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white p-4 rounded-lg shadow-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 cursor-pointer"
+              className="w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 text-white p-4 rounded-lg shadow-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 cursor-pointer"
               disabled={loading}
             >
               {loading ? "Signing In..." : "Sign In"}
