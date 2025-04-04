@@ -102,9 +102,9 @@ import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { API_BASE_URL } from "@/config/api";
 import { useAuth } from "@/context/TokenProvider";
-import { Avatar } from "@mui/material";
+import { Avatar, Box, List, ListItem, ListItemText, TextField, IconButton, Paper } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 interface Message {
   text: string;
   senderId: string;
@@ -191,65 +191,148 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex min-h-screen w-full md:flex-row flex-col bg-gradient-to-r from-indigo-500 to-purple-600 ">
-      {/* Sidebar */}
-      <div className={`md:w-1/4 w-full bg-gradient-to-r from-indigo-500 to-purple-600  text-white p-4 flex-shrink-0 ${selectedUser ? 'hidden md:block' : 'block'}`}>
-        <h2 className="text-lg font-semibold mb-4">Chats</h2>
-        <ul className="space-y-2">
-          {users.filter((u) => u.id !== currentUserId).map((user) => (
-            <li
+    <Box sx={{ display: "flex", height: "100vh", flexDirection: { xs: "column", md: "row" } }}>
+  {/* Sidebar (Chats list) */}
+  <Box
+  sx={{
+    width: { md: "25%", xs: "100%" },
+    bgcolor: "background.default",
+    borderRight: 1,
+    borderColor: "divider",
+    position: "relative",
+    marginTop: { xs: "13%",sm:"8%", md: "5%",lg:"4%",xl:"2%" },  // marginTop adjusts based on screen size
+    display: { xs: selectedUser ? "none" : "block", md: "block" }, // Hide sidebar on small screens when chat is selected
+  }}
+>
+    <Paper sx={{ p: 2, bgcolor: "primary.main", color: "white" }}>
+      <h2>Chats</h2>
+    </Paper>
+    <Box
+      sx={{
+        height: "calc(100vh - 120px)", // Adjusting height to account for header
+        overflowY: "auto",
+        position: "absolute",
+        top: "64px", // Space for the header
+        width: "100%",
+      }}
+    >
+      <List>
+        {users
+          .filter((user) => user.id !== currentUserId)
+          .map((user) => (
+            <ListItem
               key={user.id}
-              className={`p-3 cursor-pointer rounded-lg flex items-center space-x-2 transition-all ${selectedUser === user.id ? "bg-gray-700" : "hover:bg-gray-800"}`}
+              sx={{
+                cursor: "pointer",
+                bgcolor: selectedUser === user.id ? "gray.200" : "transparent",
+                "&:hover": { bgcolor: "gray.100" },
+              }}
               onClick={() => setSelectedUser(user.id)}
             >
-              <Avatar className="bg-blue-500 text-white">{user.username.charAt(0)}</Avatar>
-              <span>{user.username}</span>
-            </li>
+              <Avatar sx={{ bgcolor: "primary.main", mr: 2 }}>
+                {user.username.charAt(0)}
+              </Avatar>
+              <ListItemText primary={user.username} />
+            </ListItem>
           ))}
-        </ul>
-      </div>
+      </List>
+    </Box>
+  </Box>
 
-      {/* Chat Section */}
-      {selectedUser && (
-        <div className="flex flex-col md:w-3/4 w-full h-screen bg-white shadow-lg rounded-lg">
-          <div className="bg-gray-800 text-white p-4 font-semibold sticky top-0 flex justify-between items-center">
-            <button className="md:hidden bg-gray-700 px-3 py-1 rounded" onClick={() => setSelectedUser("")}>Back</button>
-            <span>{users.find((u) => u.id === selectedUser)?.name || "Unknown"}</span>
-          </div>
+  {/* Chat Section */}
+  {selectedUser && (
+    <Box
+      sx={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        bgcolor: "background.paper",
+        borderLeft: 1,
+        borderColor: "divider",
+        position: "relative",
+        height: "100vh", // Ensure full page height
+      }}
+    >
+      {/* Chat Header */}
+      <Paper sx={{ p: 2, bgcolor: "primary.main", color: "white", position: "sticky", top: 0, zIndex: 1 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center",marginTop: { xs: "10%",sm:"8%", md: "8%",lg:"6%",xl:"4%" }, }}>
+          <IconButton color="inherit" onClick={() => setSelectedUser("")} sx={{ display: { md: "none" } }}>
+            <ChevronLeftIcon fontSize="large"/>
+          </IconButton>
+          <span>{users.find((u) => u.id === selectedUser)?.name || "Unknown"}</span>
+        </Box>
+      </Paper>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-2 h-full">
-            {messages[selectedUser]?.map((msg, index) => {
-              const isSentByCurrentUser = msg.senderId === currentUserId;
-              return (
-                <div key={index} className="relative flex">
-                  <div
-                    className={`relative p-3 max-w-[80%] w-fit break-words rounded-lg shadow-md transition-all ${isSentByCurrentUser
-                      ? "ml-auto bg-green-500 text-white rounded-br-none"
-                      : "mr-auto bg-gray-300 text-black rounded-bl-none"
-                      }`}
-                  >
-                    {msg.text}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+      {/* Chat Messages */}
+      <Box
+        sx={{
+          flex: 1,
+          p: 2,
+          overflowY: "auto",
+          position: "relative",
+          top: "0px", // Space for the header
+          bottom: "0px", // Space for the input box
+          width: "auto",
+        }}
+      >
+        {messages[selectedUser]?.map((msg, index) => {
+          const isSentByCurrentUser = msg.senderId === currentUserId;
+          return (
+            <Box
+              key={index}
+              sx={{
+                display: "flex",
+                justifyContent: isSentByCurrentUser ? "flex-end" : "flex-start",
+                mb: 2,
+              }}
+            >
+              <Paper
+                sx={{
+                  p: 2,
+                  maxWidth: "80%",
+                  bgcolor: isSentByCurrentUser ? "primary.main" : "grey.200",
+                  color: isSentByCurrentUser ? "white" : "black",
+                  borderRadius: "16px",
+                  boxShadow: 2,
+                }}
+              >
+                {msg.text}
+              </Paper>
+            </Box>
+          );
+        })}
+      </Box>
 
-          <div className="p-4 bg-gray-100 border-t flex items-center sticky bottom-0 w-full">
-            <input
-              type="text"
-              className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition"
-              placeholder="Type a message..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-            <button className="ml-2 bg-green-500 text-white p-3 rounded-full hover:bg-green-600 transition" onClick={handleSendMessage}>
-              <SendIcon className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+      {/* Input and Send Button */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          p: 2,
+          position: "sticky",
+          bottom: 0,
+          bgcolor: "background.default",
+          borderTop: 1,
+          borderColor: "divider",
+          zIndex: 1,
+        }}
+      >
+        <TextField
+          fullWidth
+          variant="outlined"
+          size="small"
+          placeholder="Type a message..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+        <IconButton color="primary" onClick={handleSendMessage}>
+          <SendIcon />
+        </IconButton>
+      </Box>
+    </Box>
+  )}
+</Box>
+
   );
 }

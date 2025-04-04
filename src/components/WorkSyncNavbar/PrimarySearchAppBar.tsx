@@ -19,8 +19,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 
 export default function Navbar() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
-    React.useState<null | HTMLElement>(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -51,8 +50,8 @@ export default function Navbar() {
 
   return (
     <AppBar
-      position="sticky"
-      className="bg-white/10 backdrop-blur-lg shadow-lg border border-gray-200/30"
+      position="fixed"
+      className="bg-white/10 backdrop-blur-lg shadow-lg border border-gray-200/30 "
     >
       <Toolbar className="flex justify-between px-6">
         {/* Logo */}
@@ -60,10 +59,10 @@ export default function Navbar() {
           className="flex items-center gap-3 cursor-pointer"
           onClick={() => router.push("/")}
         >
-          <WorkOutlineIcon className="text-indigo-500" fontSize="large" />
+          <WorkOutlineIcon  fontSize="large" />
           <Typography
             variant="h5"
-            className="font-bold text-transparent bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text uppercase tracking-wide"
+            className="font-bold text-transparent bg-white bg-clip-text uppercase tracking-wide"
           >
             WorkSync
           </Typography>
@@ -108,13 +107,13 @@ export default function Navbar() {
         anchorEl={anchorEl}
         open={isMenuOpen}
         onClose={handleMenuClose}
-        className="mt-12"
+        className="mt-4"
       >
         <MenuItem>Hello, {user?.name}</MenuItem>
         <MenuItem>Profile</MenuItem>
         <MenuItem>My Account</MenuItem>
         <MenuItem onClick={handleLogout}>
-          <LogoutIcon className="mr-2" />
+          {/* <LogoutIcon className="mr-2" /> */}
           Logout
         </MenuItem>
       </Menu>
@@ -123,9 +122,10 @@ export default function Navbar() {
         anchorEl={mobileMoreAnchorEl}
         open={isMobileMenuOpen}
         onClose={handleMobileMenuClose}
-        className="mt-12"
+        className="mt-2"
       >
-        <MenuItem>
+        <MenuItem>Hello, {user?.name}</MenuItem>
+        <MenuItem className="gap-2">
           <IconButton>
             <Badge badgeContent={4} color="error">
               <MailIcon />
@@ -133,7 +133,7 @@ export default function Navbar() {
           </IconButton>
           Messages
         </MenuItem>
-        <MenuItem>
+        <MenuItem className="gap-2">
           <IconButton>
             <Badge badgeContent={17} color="error">
               <NotificationsIcon />
@@ -141,13 +141,13 @@ export default function Navbar() {
           </IconButton>
           Notifications
         </MenuItem>
-        <MenuItem onClick={handleProfileMenuOpen}>
+        <MenuItem onClick={handleProfileMenuOpen} className="gap-2">
           <IconButton>
             <AccountCircle />
           </IconButton>
           Profile
         </MenuItem>
-        <MenuItem onClick={handleLogout}>
+        <MenuItem onClick={handleLogout} className="gap-2">
           <IconButton>
             <LogoutIcon />
           </IconButton>
