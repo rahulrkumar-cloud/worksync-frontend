@@ -178,7 +178,7 @@ const Login: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+    <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 px-4 sm:px-6 lg:px-8">
       <div className="bg-white px-6 py-10 sm:p-10 rounded-xl shadow-2xl w-full max-w-md space-y-8 mt-6">
         <div className="relative text-center">
         <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text drop-shadow-xl tracking-tight leading-snug sm:leading-tight mb-6 sm:mb-8">

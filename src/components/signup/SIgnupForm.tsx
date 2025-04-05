@@ -106,7 +106,7 @@ const SignupForm: React.FC = () => {
   console.log("formData", formData, usernameError)
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 px-4 sm:px-6 lg:px-8 py-[70px] sm:py-16">
+    <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 px-4 sm:px-6 lg:px-8">
       <div className="bg-white p-6 sm:p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-sm sm:max-w-md md:max-w-lg space-y-6">
         {/* Heading Section */}
         <div className="relative text-center">
