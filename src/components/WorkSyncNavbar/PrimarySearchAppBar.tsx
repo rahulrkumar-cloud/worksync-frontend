@@ -50,7 +50,7 @@ export default function Navbar() {
 
   return (
     <AppBar
-      position="sticky"
+      position="fixed"
       className="bg-white/10 backdrop-blur-lg shadow-lg border border-gray-200/30 z-50 top-0 left-0 right-0"
     >
       <Toolbar className="flex justify-between px-6">

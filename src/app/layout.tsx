@@ -72,9 +72,9 @@ export default async function RootLayout({
         <AuthProvider>
           <PrimarySearchAppBar />
           <Wrapper>
-            <PagePaddingWrapper>
+            {/* <PagePaddingWrapper> */}
               {children}
-            </PagePaddingWrapper>
+            {/* </PagePaddingWrapper> */}
           </Wrapper>
 
         </AuthProvider>
