@@ -50,8 +50,8 @@ export default function Navbar() {
 
   return (
     <AppBar
-      position="relative"
-      className="bg-white/10 backdrop-blur-lg shadow-lg border border-gray-200/30 z-100 "
+      position="fixed"
+      className="bg-white/10 backdrop-blur-lg shadow-lg border border-gray-200/30 z-50 top-0 left-0 right-0"
     >
       <Toolbar className="flex justify-between px-6">
         {/* Logo */}
@@ -59,7 +59,7 @@ export default function Navbar() {
           className="flex items-center gap-3 cursor-pointer"
           onClick={() => router.push("/")}
         >
-          <WorkOutlineIcon  fontSize="large" />
+          <WorkOutlineIcon fontSize="large" />
           <Typography
             variant="h5"
             className="font-bold text-transparent bg-white bg-clip-text uppercase tracking-wide"
@@ -67,7 +67,7 @@ export default function Navbar() {
             WorkSync
           </Typography>
         </Box>
-
+  
         {/* Icons Section */}
         <Box className="hidden md:flex gap-5 items-center">
           {isAuthenticated && (
@@ -91,7 +91,7 @@ export default function Navbar() {
             </>
           )}
         </Box>
-
+  
         {/* Mobile Menu */}
         <Box className="md:hidden">
           {isAuthenticated && (
@@ -101,7 +101,7 @@ export default function Navbar() {
           )}
         </Box>
       </Toolbar>
-
+  
       {/* Dropdown Menus */}
       <Menu
         anchorEl={anchorEl}
@@ -112,12 +112,9 @@ export default function Navbar() {
         <MenuItem>Hello, {user?.name}</MenuItem>
         <MenuItem>Profile</MenuItem>
         <MenuItem>My Account</MenuItem>
-        <MenuItem onClick={handleLogout}>
-          {/* <LogoutIcon className="mr-2" /> */}
-          Logout
-        </MenuItem>
+        <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
-
+  
       <Menu
         anchorEl={mobileMoreAnchorEl}
         open={isMobileMenuOpen}
@@ -156,4 +153,5 @@ export default function Navbar() {
       </Menu>
     </AppBar>
   );
+  
 }

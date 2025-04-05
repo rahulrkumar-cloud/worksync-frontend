@@ -57,6 +57,11 @@ export const metadata: Metadata = {
 };
 
 export const dynamic = "force-dynamic"; // ✅ Ensure fresh token on hard reload
+const PagePaddingWrapper = ({ children }: { children: React.ReactNode }) => {
+  return <div className="pt-[56px] md:pt-[64px]">{children}</div>;
+};
+
+
 
 export default async function RootLayout({
   children,
@@ -67,8 +72,11 @@ export default async function RootLayout({
         <AuthProvider>
           <PrimarySearchAppBar />
           <Wrapper>
-          {children}
+            <PagePaddingWrapper>
+              {children}
+            </PagePaddingWrapper>
           </Wrapper>
+
         </AuthProvider>
       </body>
     </html>
