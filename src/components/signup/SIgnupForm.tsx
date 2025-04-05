@@ -106,22 +106,39 @@ const SignupForm: React.FC = () => {
   console.log("formData", formData, usernameError)
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 px-8">
-      <div className="bg-white p-10 rounded-lg shadow-2xl w-full sm:w-96 space-y-6 mt-4">
+    <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 px-4 sm:px-6 lg:px-8 py-[70px] sm:py-16">
+      <div className="bg-white p-6 sm:p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-sm sm:max-w-md md:max-w-lg space-y-6">
+        {/* Heading Section */}
         <div className="relative text-center">
-          <h2 className="text-5xl font-extrabold text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text drop-shadow-xl tracking-tight leading-tight mb-6">
-            Create Your Account & Get Started!
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text drop-shadow-xl tracking-tight leading-snug sm:leading-tight mb-6 sm:mb-8">
+            Create Your Account
+            <br className="hidden md:block" /> & Get Started!
           </h2>
-          <svg className="absolute left-1/2 -translate-x-1/2 bottom-0 w-48 md:w-64 h-6 text-pink-500 animate-bounce" viewBox="0 0 200 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 20C30 5 70 30 100 10C130 -10 170 30 195 5" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+  
+          <svg
+            className="absolute left-1/2 -translate-x-1/2 bottom-0 w-32 sm:w-44 md:w-60 h-5 sm:h-6 text-pink-500 animate-bounce"
+            viewBox="0 0 200 25"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M5 20C30 5 70 30 100 10C130 -10 170 30 195 5"
+              stroke="currentColor"
+              strokeWidth="4"
+              strokeLinecap="round"
+            />
           </svg>
         </div>
-
-        {error && <p className="text-red-500 text-center">{error}</p>} {/* ✅ Shows error message */}
-        {usernameError && <p className="text-red-500 text-center">{usernameError}</p>}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4 relative">
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+  
+        {/* Error Messages */}
+        {error && <p className="text-red-500 text-center text-sm sm:text-base">{error}</p>}
+        {usernameError && <p className="text-red-500 text-center text-sm sm:text-base">{usernameError}</p>}
+  
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Username */}
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
               Username
             </label>
             <div className="relative">
@@ -132,14 +149,17 @@ const SignupForm: React.FC = () => {
                 value={formData.username}
                 onChange={handleChange}
                 required
-                className="w-full p-4 pr-12 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+                className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               />
-              {/* Green-colored icon positioned inside the input */}
-              {isValidUsername && formData.username.trim() !== "" && <VerifiedRoundedIcon className="absolute right-4 top-1/2 transform -translate-y-1/2 text-green-500" />}
+              {isValidUsername && formData.username.trim() !== "" && (
+                <VerifiedRoundedIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500 text-lg sm:text-xl" />
+              )}
             </div>
           </div>
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+  
+          {/* Name */}
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
               Name
             </label>
             <input
@@ -149,11 +169,13 @@ const SignupForm: React.FC = () => {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full p-4 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
             />
           </div>
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+  
+          {/* Email */}
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
               Email Address
             </label>
             <input
@@ -163,11 +185,13 @@ const SignupForm: React.FC = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full p-4 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
             />
           </div>
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+  
+          {/* Password */}
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Password
             </label>
             <input
@@ -177,11 +201,13 @@ const SignupForm: React.FC = () => {
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full p-4 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
             />
           </div>
-          <div className="mb-4">
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+  
+          {/* Confirm Password */}
+          <div>
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
               Confirm Password
             </label>
             <input
@@ -191,10 +217,12 @@ const SignupForm: React.FC = () => {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              className="w-full p-4 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
             />
           </div>
-          <div className="mb-6 flex items-center">
+  
+          {/* Terms */}
+          <div className="flex items-center">
             <input
               type="checkbox"
               id="agreeToTerms"
@@ -208,16 +236,23 @@ const SignupForm: React.FC = () => {
               <span className="text-blue-500 underline">terms and conditions</span>
             </label>
           </div>
+  
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 text-white p-4 rounded-lg shadow-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 cursor-pointer"
+            className="w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 text-white px-4 py-3 rounded-lg shadow-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 text-sm sm:text-base"
           >
             {loading ? "Signing Up..." : "Sign Up"}
           </button>
-          <div className="text-center text-sm mt-4">
+  
+          {/* Login link */}
+          <div className="text-center text-sm sm:text-base mt-2">
             <span className="text-gray-700">Already have an account? </span>
-            <a onClick={() => router.push("/login")} className="text-blue-500 hover:underline cursor-pointer">
+            <a
+              onClick={() => router.push("/login")}
+              className="text-blue-500 hover:underline cursor-pointer"
+            >
               Login
             </a>
           </div>
@@ -225,6 +260,8 @@ const SignupForm: React.FC = () => {
       </div>
     </div>
   );
+  
+
 };
 
 export default SignupForm;

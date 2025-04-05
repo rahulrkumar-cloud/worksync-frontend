@@ -178,38 +178,47 @@ const Login: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 px-8">
-      <div className="bg-white p-10 rounded-lg shadow-2xl w-full sm:w-96 space-y-6 mt-4">
+    <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <div className="bg-white px-6 py-10 sm:p-10 rounded-xl shadow-2xl w-full max-w-md space-y-8 mt-6">
         <div className="relative text-center">
-          <h2 className="text-6xl font-extrabold text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text drop-shadow-xl tracking-tight leading-tight mb-6">
-            Welcome Back! Ready to Dive In?
-          </h2>
-          <svg className="absolute left-1/2 -translate-x-1/2 bottom-0 w-48 md:w-64 h-6 text-pink-500 animate-bounce" viewBox="0 0 200 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 20C30 5 70 30 100 10C130 -10 170 30 195 5" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text drop-shadow-xl tracking-tight leading-snug sm:leading-tight mb-6 sm:mb-8">
+  Welcome Back!<br className="hidden md:block" /> Ready to Dive In?
+</h2>
+
+          <svg
+            className="absolute left-1/2 -translate-x-1/2 bottom-0 w-32 sm:w-44 md:w-56 h-6 text-pink-500 animate-bounce"
+            viewBox="0 0 200 25"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M5 20C30 5 70 30 100 10C130 -10 170 30 195 5"
+              stroke="currentColor"
+              strokeWidth="4"
+              strokeLinecap="round"
+            />
           </svg>
         </div>
-
-
-
-        {error && <div className="text-center text-red-500 mb-4">{error}</div>}
-
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              Email / User name
+  
+        {error && <div className="text-center text-red-500">{error}</div>}
+  
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              Email / Username
             </label>
             <input
-              type=""
+              type="text"
               id="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full p-4 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+              className="w-full p-3 sm:p-4 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
             />
           </div>
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Password
             </label>
             <input
@@ -219,26 +228,32 @@ const Login: React.FC = () => {
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full p-4 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+              className="w-full p-3 sm:p-4 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
             />
           </div>
-          <div className="mb-6">
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 text-white p-4 rounded-lg shadow-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 cursor-pointer"
-              disabled={loading}
-            >
-              {loading ? "Signing In..." : "Sign In"}
-            </button>
-          </div>
-          <div className="text-center text-sm">
+  
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 text-white py-3 sm:py-4 rounded-lg shadow-lg hover:from-indigo-500 hover:to-purple-500 transition duration-300 transform hover:scale-105"
+            disabled={loading}
+          >
+            {loading ? "Signing In..." : "Sign In"}
+          </button>
+  
+          <div className="text-center text-sm pt-2">
             <span className="text-gray-700">Don't have an account? </span>
-            <a onClick={() => router.push("/signup")} className="text-blue-500 hover:underline cursor-pointer">Sign Up</a>
+            <span
+              onClick={() => router.push("/signup")}
+              className="text-blue-500 hover:underline cursor-pointer"
+            >
+              Sign Up
+            </span>
           </div>
         </form>
       </div>
     </div>
   );
+  
 };
 
 export default Login;
