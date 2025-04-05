@@ -136,36 +136,36 @@ const Login: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-  
+
     // Check if input is an email or username
     const isEmail = formData.email.includes("@"); // Check for '@' to determine email
-  
+
     const payload = isEmail
       ? { email: formData.email, password: formData.password } // Login with email
       : { username: formData.email, password: formData.password }; // Login with username
-  
+
     try {
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-  
+
       const data = await response.json();
       console.log("Response data:", data); // 🔍 Debug response
-  
+
       if (!response.ok) {
         throw new Error(data.message || "Invalid Credentials");
       }
-  
+
       // ✅ Store token and user data
       setToken(data.token);
       setIsAuthenticated(true);
       setUser(data.user);
-  
+
       Cookies.set("token", data.token, { expires: 7 });
       Cookies.set("user", JSON.stringify(data.user), { expires: 7 });
-  
+
       router.push("/"); // Redirect after login
     } catch (err: any) {
       console.log("Error caught:", err.message);
@@ -174,16 +174,16 @@ const Login: React.FC = () => {
       setLoading(false);
     }
   };
-  
+
 
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 px-4 sm:px-6 lg:px-8">
       <div className="bg-white px-6 py-10 sm:p-10 rounded-xl shadow-2xl w-full max-w-md space-y-8 mt-6">
         <div className="relative text-center">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text drop-shadow-xl tracking-tight leading-snug sm:leading-tight mb-6 sm:mb-8">
-  Welcome Back!<br className="hidden md:block" /> Ready to Dive In?
-</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text drop-shadow-xl tracking-tight leading-snug sm:leading-tight mb-6 sm:mb-8">
+            Welcome Back!<br className="hidden md:block" /> Ready to Dive In?
+          </h2>
 
           <svg
             className="absolute left-1/2 -translate-x-1/2 bottom-0 w-32 sm:w-44 md:w-56 h-6 text-pink-500 animate-bounce"
@@ -199,9 +199,9 @@ const Login: React.FC = () => {
             />
           </svg>
         </div>
-  
+
         {error && <div className="text-center text-red-500">{error}</div>}
-  
+
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
@@ -231,7 +231,7 @@ const Login: React.FC = () => {
               className="w-full p-3 sm:p-4 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
             />
           </div>
-  
+
           <button
             type="submit"
             className="w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 text-white py-3 sm:py-4 rounded-lg shadow-lg hover:from-indigo-500 hover:to-purple-500 transition duration-300 transform hover:scale-105"
@@ -239,7 +239,7 @@ const Login: React.FC = () => {
           >
             {loading ? "Signing In..." : "Sign In"}
           </button>
-  
+
           <div className="text-center text-sm pt-2">
             <span className="text-gray-700">Don't have an account? </span>
             <span
@@ -253,7 +253,7 @@ const Login: React.FC = () => {
       </div>
     </div>
   );
-  
+
 };
 
 export default Login;

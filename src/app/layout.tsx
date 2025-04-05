@@ -58,7 +58,7 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic"; // ✅ Ensure fresh token on hard reload
 const PagePaddingWrapper = ({ children }: { children: React.ReactNode }) => {
-  return <div className="pt-[56px] md:pt-[64px]">{children}</div>;
+  return <div className="pt-[-56px] md:pt-[-64px]">{children}</div>;
 };
 
 
